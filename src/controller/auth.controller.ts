@@ -6,8 +6,7 @@ const googleAuth = async (req: Request, res: Response) => {
     const googleUser = req.user as { id: string };
     const googleId = googleUser.id;
 
-    const user: IGoogleAuth =
-        (await GoogleAuth.findOne({ googleId })) || (await GoogleAuth.getOrCreate(googleId));
+    const user: IGoogleAuth = await GoogleAuth.getOrCreate(googleId);
 
     res.send({
         token: JwtToken.create(TokenType.AUTH, user.userId),
