@@ -9,6 +9,9 @@ const config = {
         SECRET_KEY: process.env.TOKEN_SECRET_KEY,
         EXPIRE_TIME: 2 * 60 * 60 * 1000, // 2H
     },
+    DB: {
+        MONGO_URI: process.env.MONGO_URI,
+    },
     GOOGLE: {
         CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
         CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
