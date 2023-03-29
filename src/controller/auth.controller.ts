@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { GoogleAuth, IGoogleAuth } from '../models/google.auth.model';
+import { JwtToken, TokenType } from '../utils/token.utils';
 
 const googleAuth = async (req: Request, res: Response) => {
     const googleUser = req.user as { id: string };
@@ -8,7 +9,10 @@ const googleAuth = async (req: Request, res: Response) => {
     const user: IGoogleAuth =
         (await GoogleAuth.findOne({ googleId })) || (await GoogleAuth.getOrCreate(googleId));
 
-    res.send(user);
+    res.send({
+        token: JwtToken.create(TokenType.AUTH, user.userId),
+        user: user,
+    });
 };
 
 export default {

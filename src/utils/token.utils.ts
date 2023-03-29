@@ -1,3 +1,14 @@
+import errorConstants from '../constants/error.constant';
+import jwt from 'jsonwebtoken';
+import config from '../config';
+import { IGoogleAuth, GoogleAuth } from '../models/google.auth.model';
+import { IUser } from '../interface/user.interface';
+import { IResult } from '../interface/result.interface';
+
+export enum TokenType {
+    AUTH = 'AUTH',
+}
+
 export interface IJwtToken {
     expiry: string;
     type: string;
@@ -5,27 +16,31 @@ export interface IJwtToken {
 }
 
 export const JwtToken = {
-    create: (expiry: string, type: string, id: number): IJwtToken => {
-        return {
-            expiry,
-            type,
+    // Create Token
+    create: (type: TokenType, id: string) => {
+        const payload = {
             id,
-        } as IJwtToken;
+            type,
+            expiry: new Date(Date.now() + config.JWT_TOKEN.EXPIRE_TIME),
+        };
+        let token = jwt.sign(payload, config.JWT_TOKEN.SECRET_KEY!);
+        return token;
     },
 
-    // Verify Token
-    process: (jwtToken: IJwtToken): string | null => {
-        if (
-            !jwtToken.expiry ||
-            new Date(jwtToken.expiry).getTime() < Date.now()
-        ) {
-            return 'TOKEN_EXPIRED';
+    // Process Token
+    process: (jwtToken: IJwtToken): IResult<IUser> => {
+        if (!jwtToken.expiry || new Date(jwtToken.expiry).getTime() < Date.now()) {
+            return { result: errorConstants.TOKEN_EXPIRED };
         }
 
         if (jwtToken.type !== 'TYPE_AUTH') {
-            return 'INVALID_TOKEN';
+            return { result: errorConstants.TOKEN_INVALID };
         }
 
-        return null;
+        const user: IUser = {
+            id: jwtToken.id,
+        };
+
+        return { result: null, data: user };
     },
 };

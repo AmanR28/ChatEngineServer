@@ -1,4 +1,4 @@
-import mongoose, { Schema, model, Model } from 'mongoose';
+import { Schema, model, Model } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
 
 export interface IGoogleAuth extends Document {
