@@ -7,7 +7,7 @@ export interface IGoogleAuth extends Document {
 }
 
 export interface IGoogleAuthModel extends Model<IGoogleAuth> {
-    createWithGoogleId(googleId: string): Promise<IGoogleAuth>;
+    getOrCreate(googleId: string): Promise<IGoogleAuth>;
 }
 
 const googleAuthSchema = new Schema<IGoogleAuth>({
@@ -21,9 +21,7 @@ const googleAuthSchema = new Schema<IGoogleAuth>({
     },
 });
 
-googleAuthSchema.statics.createWithGoogleId = async function (
-    googleId: string
-): Promise<IGoogleAuth> {
+googleAuthSchema.statics.getOrCreate = async function (googleId: string): Promise<IGoogleAuth> {
     const user = new GoogleAuth({
         googleId: googleId,
         userId: uuidv4(),
@@ -32,4 +30,8 @@ googleAuthSchema.statics.createWithGoogleId = async function (
     return user;
 };
 
-export const GoogleAuth = model<IGoogleAuth, IGoogleAuthModel>('Auth', googleAuthSchema);
+export const GoogleAuth = model<IGoogleAuth, IGoogleAuthModel>(
+    'GoogleAuth',
+    googleAuthSchema,
+    'auth_google'
+);

@@ -6,8 +6,7 @@ const googleAuth = async (req: Request, res: Response) => {
     const googleId = googleUser.id;
 
     const user: IGoogleAuth =
-        (await GoogleAuth.findOne({ googleId })) ||
-        (await GoogleAuth.createWithGoogleId(googleId));
+        (await GoogleAuth.findOne({ googleId })) || (await GoogleAuth.getOrCreate(googleId));
 
     res.send(user);
 };
