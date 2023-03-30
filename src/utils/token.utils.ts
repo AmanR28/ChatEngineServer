@@ -1,9 +1,7 @@
-import errorConstants from '../constants/error.constant';
+import { ErrorTypes, UnAuthorizedError } from '../errors';
 import jwt from 'jsonwebtoken';
 import config from '../config';
-import { IGoogleAuth, GoogleAuth } from '../models/google.auth.model';
 import { IUser } from '../interface/user.interface';
-import { IResult } from '../interface/result.interface';
 
 export enum TokenType {
     AUTH = 'AUTH',
@@ -28,19 +26,18 @@ export const JwtToken = {
     },
 
     // Process Token
-    process: (jwtToken: IJwtToken): IResult<IUser> => {
+    process: (jwtToken: IJwtToken): IUser => {
         if (!jwtToken.expiry || new Date(jwtToken.expiry).getTime() < Date.now()) {
-            return { result: errorConstants.TOKEN_EXPIRED };
+            throw new UnAuthorizedError(ErrorTypes.TOKEN_EXPIRED);
         }
 
-        if (jwtToken.type !== 'TYPE_AUTH') {
-            return { result: errorConstants.TOKEN_INVALID };
+        if (jwtToken.type !== TokenType.AUTH) {
+            throw new UnAuthorizedError(ErrorTypes.TOKEN_INVALID);
         }
 
         const user: IUser = {
             id: jwtToken.id,
         };
-
-        return { result: null, data: user };
+        return user;
     },
 };

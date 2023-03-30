@@ -11,4 +11,11 @@ export class ApplicationError extends Error {
         this.statusCode = statusCode;
         this.message = message;
     }
+
+    public getError() {
+        return {
+            name: this.name,
+            message: this.message,
+        };
+    }
 }
