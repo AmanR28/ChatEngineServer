@@ -7,6 +7,7 @@ import { IRequest } from '../interface/request.interface';
 const isAuth = async (req: IRequest, res: Response, next: NextFunction) => {
     try {
         if (req.JWT_ERROR) throw req.JWT_ERROR;
+        if (!req.JWT_USER) throw new Error('User Not Here');
         next();
     } catch (error) {
         if (req.JWT_ERROR instanceof UnAuthorizedError) {

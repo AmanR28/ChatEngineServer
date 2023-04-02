@@ -13,7 +13,8 @@ passport.use(
             passReqToCallback: true,
         },
         async (req: Request, jwtToken: IJwtToken, next: Function) => {
-            next(JwtToken.process(jwtToken));
+            let data = JwtToken.process(jwtToken);
+            next(data.error, data.user);
         }
     )
 );
