@@ -3,31 +3,37 @@ import { Schema, model, Model } from 'mongoose';
 export interface IConnectionsUser extends Document {
     userId: string;
     updatedAt: Date;
-    new: string[];
-    [key: string]: any;
+    updates: Map<string, string[]>;
 }
 
-export interface IConnectionsUserModel extends Model<IConnectionsUser> {}
+export interface IConnectionsUserModel extends Model<IConnectionsUser> {
+    getOrCreate(userId: string): Promise<IConnectionsUser>;
+}
 
-const connectionsUserSchema = new Schema<IConnectionsUser>(
-    {
-        userId: {
-            type: String,
-            required: true,
-            index: true,
-        },
-        updatedAt: {
-            type: Date,
-        },
-        new: {
-            type: [String],
-        },
+const connectionsUserSchema = new Schema<IConnectionsUser>({
+    userId: {
+        type: String,
+        required: true,
+        index: true,
     },
-    { strict: false }
-);
+    updatedAt: {
+        type: Date,
+    },
+    updates: {
+        type: Map,
+    },
+});
+
+connectionsUserSchema.statics.getOrCreate = async function (
+    userId: string
+): Promise<IConnectionsUser> {
+    return (
+        (await ConnectionsUser.findOne({ userId })) || (await ConnectionsUser.create({ userId }))
+    );
+};
 
 export const ConnectionsUser = model<IConnectionsUser, IConnectionsUserModel>(
     'ConnectionsUser',
     connectionsUserSchema,
-    'connections_user'
+    'user_connections'
 );

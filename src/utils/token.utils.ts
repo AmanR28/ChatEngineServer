@@ -10,7 +10,7 @@ export enum TokenType {
 export interface IJwtToken {
     expiry: string;
     type: string;
-    id: number;
+    id: string;
 }
 
 export const JwtToken = {

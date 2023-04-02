@@ -7,7 +7,7 @@ export interface IDirectMessages extends Document {
     connId: string;
     userId1: string;
     userId2: string;
-    messages: IMessage[];
+    messages: Map<string, IMessage>;
 }
 
 export interface IDirectMessagesModel extends Model<IDirectMessages> {}
@@ -27,7 +27,10 @@ const directMessageSchema = new Schema<IDirectMessages>({
         type: String,
         required: true,
     },
-    messages: [messageSchema],
+    messages: {
+        type: Map,
+        of: messageSchema,
+    },
 });
 
 directMessageSchema.index({ userId1: 1, userId2: 1 });
