@@ -1,4 +1,4 @@
-import { ErrorTypes, UnAuthorizedError } from '../errors';
+import { ApplicationError, ErrorTypes, UnAuthorizedError } from '../errors';
 import jwt from 'jsonwebtoken';
 import config from '../config';
 import { IUser } from '../interface/user.interface';
@@ -25,8 +25,8 @@ export const JwtToken = {
         return token;
     },
 
-    // Process Token
-    process: (jwtToken: IJwtToken): { error: Error | null; user?: IUser } => {
+    process: (token: string): { error: ApplicationError | null; user?: IUser | null } => {
+        let jwtToken = jwt.verify(token, config.JWT_TOKEN.SECRET_KEY!) as IJwtToken;
         if (!jwtToken.expiry || new Date(jwtToken.expiry).getTime() < Date.now())
             return { error: new UnAuthorizedError(ErrorTypes.TOKEN_EXPIRED) };
 
@@ -36,6 +36,7 @@ export const JwtToken = {
         const user: IUser = {
             id: jwtToken.id,
         };
+
         return { error: null, user };
     },
 };

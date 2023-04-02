@@ -4,5 +4,5 @@ import { ApplicationError } from 'src/errors';
 
 export interface IRequest extends Request {
     JWT_ERROR?: ApplicationError;
-    JWT_USER?: IUser;
+    JWT_USER?: IUser | null;
 }

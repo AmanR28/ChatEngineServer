@@ -12,8 +12,9 @@ passport.use(
             secretOrKey: config.JWT_TOKEN.SECRET_KEY!,
             passReqToCallback: true,
         },
-        async (req: Request, jwtToken: IJwtToken, next: Function) => {
+        async (req: Request, jwtToken: string, next: Function) => {
             let data = JwtToken.process(jwtToken);
+            console.log('data', data);
             next(data.error, data.user);
         }
     )

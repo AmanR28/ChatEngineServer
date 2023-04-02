@@ -4,6 +4,8 @@ export interface IConnectionsUser extends Document {
     userId: string;
     updatedAt: Date;
     updates: Map<string, string[]>;
+    connections: Map<string, string>;
+    getConnection(connUserId: string): Promise<IConnectionsUser>;
 }
 
 export interface IConnectionsUserModel extends Model<IConnectionsUser> {
@@ -21,6 +23,11 @@ const connectionsUserSchema = new Schema<IConnectionsUser>({
     },
     updates: {
         type: Map,
+        of: [String],
+    },
+    connections: {
+        type: Map,
+        of: String,
     },
 });
 
@@ -30,6 +37,10 @@ connectionsUserSchema.statics.getOrCreate = async function (
     return (
         (await ConnectionsUser.findOne({ userId })) || (await ConnectionsUser.create({ userId }))
     );
+};
+
+connectionsUserSchema.methods.getConnection = async function (connUserId: string) {
+    return this.connections[connUserId];
 };
 
 export const ConnectionsUser = model<IConnectionsUser, IConnectionsUserModel>(
