@@ -26,18 +26,16 @@ export const JwtToken = {
     },
 
     // Process Token
-    process: (jwtToken: IJwtToken): IUser => {
-        if (!jwtToken.expiry || new Date(jwtToken.expiry).getTime() < Date.now()) {
-            throw new UnAuthorizedError(ErrorTypes.TOKEN_EXPIRED);
-        }
+    process: (jwtToken: IJwtToken): { error: Error | null; user?: IUser } => {
+        if (!jwtToken.expiry || new Date(jwtToken.expiry).getTime() < Date.now())
+            return { error: new UnAuthorizedError(ErrorTypes.TOKEN_EXPIRED) };
 
-        if (jwtToken.type !== TokenType.AUTH) {
-            throw new UnAuthorizedError(ErrorTypes.TOKEN_INVALID);
-        }
+        if (jwtToken.type !== TokenType.AUTH)
+            return { error: new UnAuthorizedError(ErrorTypes.TOKEN_EXPIRED) };
 
         const user: IUser = {
             id: jwtToken.id,
         };
-        return user;
+        return { error: null, user };
     },
 };

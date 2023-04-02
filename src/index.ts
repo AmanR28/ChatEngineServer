@@ -6,8 +6,9 @@ import authRoutes from './routes/auth.routes';
 import passport from 'passport';
 import { stream } from './services/logger.services';
 import mongoose from 'mongoose';
-import currentUser from './middlewares/currentUser';
+import currentUser from './middlewares/currentUser.middleware';
 import userRoutes from './routes/user.routes';
+import errorHandler from './middlewares/errorHandler.middleware';
 
 import './db';
 
@@ -24,6 +25,8 @@ app.use(currentUser);
 
 app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
+
+app.use(errorHandler);
 
 (async () => {
     await mongoose.connect(config.DB.MONGO_URI!, {

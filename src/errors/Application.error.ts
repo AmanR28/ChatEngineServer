@@ -3,19 +3,12 @@ import errorTypes from './errorTypes';
 export class ApplicationError extends Error {
     public statusCode: number;
     public message: string;
+    public status: string;
 
-    constructor(statusCode: number, message: errorTypes | string) {
+    constructor(message: errorTypes | string, status: errorTypes, statusCode: number) {
         super(message);
-        Error.captureStackTrace(this, this.constructor);
-        this.name = this.constructor.name;
         this.statusCode = statusCode;
+        this.status = status;
         this.message = message;
-    }
-
-    public getError() {
-        return {
-            name: this.name,
-            message: this.message,
-        };
     }
 }
