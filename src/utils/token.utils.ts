@@ -40,3 +40,6 @@ export const JwtToken = {
         return { error: null, user };
     },
 };
+
+// Fake Token
+// console.log(JwtToken.create(TokenType.AUTH, 'alpha'));

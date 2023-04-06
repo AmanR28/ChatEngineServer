@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { AuthGoogle, IAuthGoogle } from '../models/google.auth.model';
+import { AuthGoogle } from '../models/google.auth.model';
 import { JwtToken, TokenType } from '../utils/token.utils';
 import { UserProfile } from '../models/profile.user.model';
 import { v4 as uuidv4 } from 'uuid';

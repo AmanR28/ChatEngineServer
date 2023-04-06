@@ -6,11 +6,12 @@ import { NotFound } from '../errors';
 
 export * from './message.model';
 
-export interface IDirectMessages extends Document {
+export interface IDirectMessages {
     connId: string;
     userId1: string;
     userId2: string;
     messages: Map<string, IDMessage>;
+    send(message: IDMessage): Promise<null>;
 }
 
 export interface IDirectMessagesModel extends Model<IDirectMessages> {
@@ -35,6 +36,7 @@ const directMessageSchema = new Schema<IDirectMessages>({
     messages: {
         type: Map,
         of: dMessageSchema,
+        required: true,
     },
 });
 
@@ -57,7 +59,7 @@ directMessageSchema.statics.getOrCreateId = async function (uid1, uid2) {
         let conn2 = await UserConnections.findOne({ userId: userId2 });
         if (!conn1 || !conn2) throw new NotFound('Missing User');
 
-        conn = await DirectMessages.create({ connId: uuidv4(), userId1, userId2 });
+        conn = await DirectMessages.create({ connId: uuidv4(), userId1, userId2, messages: {} });
 
         conn1.connections.set(userId2, conn.connId);
         conn2.connections.set(userId1, conn.connId);
@@ -67,6 +69,31 @@ directMessageSchema.statics.getOrCreateId = async function (uid1, uid2) {
     }
 
     return conn!.connId;
+};
+
+directMessageSchema.methods.send = async function (message: IDMessage) {
+    let msgId = uuidv4();
+    message.msgId = msgId;
+
+    console.log(this.messages);
+
+    this.messages.set(msgId, message);
+    await this.save();
+
+    let uid1 = this.userId1;
+    let uid2 = this.userId2;
+    let updates = 'updates.';
+
+    if (message.sendBy == uid1) {
+        updates += uid1;
+        await UserConnections.updateOne({ userId: uid2 }, { $push: { [updates]: msgId } });
+    }
+    if (message.sendBy == uid2) {
+        updates += uid2;
+        await UserConnections.updateOne({ userId: uid1 }, { $push: { [updates]: msgId } });
+    }
+
+    return null;
 };
 
 export const DirectMessages = model<IDirectMessages, IDirectMessagesModel>(

@@ -1,8 +1,5 @@
-import passport from 'passport';
-import { Request, Response, NextFunction } from 'express';
-import { ApplicationError, ErrorTypes, UnAuthorizedError } from '../errors';
-import { IUser } from '../interface/user.interface';
-import { IRequest } from '../interface/request.interface';
+import { ErrorTypes, UnAuthorizedError } from '../errors';
+import { IRequest, Response, NextFunction } from '../interface/request.interface';
 import { JwtToken } from '../utils/token.utils';
 
 const currentUser = (req: IRequest, res: Response, next: NextFunction) => {

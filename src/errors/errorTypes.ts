@@ -8,6 +8,9 @@ enum ErrorTypes {
     TOKEN_EXPIRED = 'TOKEN_EXPIRED',
     TOKEN_INVALID = 'TOKEN_INVALID',
 
+    // Connections
+    CONNECTION_INVALID = 'CONNECTION_INVALID',
+
     /*
         Bad Request
      */
@@ -20,6 +23,10 @@ enum ErrorTypes {
         Not Found
     */
     NOT_FOUND = 'NOT_FOUND',
+
+    // Connections
+    CONNECTION_NOT_FOUND = 'CONNECTION_NOT_FOUND',
+    MESSAGE_NOT_FOUND = 'MESSAGE_NOT_FOUND',
 }
 
 export default ErrorTypes;
