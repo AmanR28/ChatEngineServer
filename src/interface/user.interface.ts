@@ -4,7 +4,7 @@ import { IUserProfile } from 'src/models/profile.user.model';
 
 export interface IUser {
     id: string;
-    connId?: ObjectId;
+    connsId?: ObjectId;
     profileId?: ObjectId;
     connections?: IUserConnections | null;
     profile?: IUserProfile | null;

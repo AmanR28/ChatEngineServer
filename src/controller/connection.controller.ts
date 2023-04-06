@@ -5,7 +5,7 @@ import { DirectMessages } from '../models/direct.messages.model';
 import { ApplicationError, BadRequest, ErrorTypes } from '../errors';
 
 const connections = async (req: IRequest, res: Response) => {
-    let connId = req.JWT_USER?.connId!;
+    let connId = req.JWT_USER?.connsId!;
 
     let conns = await UserConnections.findById(connId, { connections: 1, _id: 0 });
 
@@ -19,9 +19,9 @@ const connect = async (req: IRequest, res: Response, next: NextFunction) => {
         let connUserId = req.body.userId;
         if (!connUserId) throw new BadRequest(ErrorTypes.MISSING_FIELDS);
 
-        let conn = await UserConnections.findById(req.JWT_USER!.connId, { connections: 1 });
-        let connId = conn!.connections.get(connUserId);
+        let conn = await UserConnections.findById(req.JWT_USER!.connsId, { connections: 1 });
 
+        let connId = conn!.connections.get(connUserId);
         if (!connId) connId = await DirectMessages.getOrCreateId(req.JWT_USER!.id, connUserId);
 
         res.status(200).json({

@@ -5,7 +5,6 @@ export interface IUserConnections extends Document {
     updatedAt: Date;
     updates: Map<string, string[]>;
     connections: Map<string, string>;
-    getConnection(connUserId: string): Promise<IUserConnections>;
 }
 
 export interface IUserConnectionsModel extends Model<IUserConnections> {
@@ -45,10 +44,6 @@ connectionsUserSchema.statics.getOrCreateId = async function (userId: string): P
         });
     }
     return conn.id;
-};
-
-connectionsUserSchema.methods.getConnection = async function (connUserId: string) {
-    return this.connections[connUserId];
 };
 
 export const UserConnections = model<IUserConnections, IUserConnectionsModel>(

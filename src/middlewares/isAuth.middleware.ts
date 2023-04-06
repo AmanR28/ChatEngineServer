@@ -10,7 +10,7 @@ const isAuth = async (req: IRequest, res: Response, next: NextFunction) => {
         if (req.JWT_ERROR) throw req.JWT_ERROR;
         if (!req.JWT_USER) throw new Error('User Not Here');
 
-        req.JWT_USER.connId = await UserConnections.getOrCreateId(req.JWT_USER.id);
+        req.JWT_USER.connsId = await UserConnections.getOrCreateId(req.JWT_USER.id);
         req.JWT_USER.profileId = await UserProfile.getOrCreateId(req.JWT_USER.id);
 
         next();
