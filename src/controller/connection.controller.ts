@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response } from 'express';
 import { IRequest } from '../interface/request.interface';
-import { ConnectionsUser } from '../models/connections.user.model';
+import { UserConnections } from '../models/connections.user.model';
 import { DirectMessages } from '../models/direct.messages.model';
 import { ApplicationError } from '../errors';
 
 const getConnections = async (req: IRequest, res: Response) => {
     let userId = req.JWT_USER!.id!;
-    let conns = await ConnectionsUser.getOrCreate(userId);
+    let conns = await UserConnections.getOrCreate(userId);
 
     return res.send(conns);
 };
@@ -32,7 +32,7 @@ const getConnection = async (req: IRequest, res: Response, next: NextFunction) =
         if (!connId) {
             console.log('not');
             connId = await DirectMessages.getOrCreate(userId1, userId2);
-            await ConnectionsUser.updateOne(
+            await UserConnections.updateOne(
                 { userId: user.id },
                 { $set: { [`connections.${connUserId}`]: connId } }
             );
@@ -50,7 +50,7 @@ const getConnection = async (req: IRequest, res: Response, next: NextFunction) =
 
 const getUpdates = async (req: IRequest, res: Response) => {
     let userId = req.JWT_USER!.id!;
-    let updates = await ConnectionsUser.findOne({ userId }, { updatedAt: 1 });
+    let updates = await UserConnections.findOne({ userId }, { updatedAt: 1 });
     if (!updates) {
         return res.send('Connections Doest Exist');
     }

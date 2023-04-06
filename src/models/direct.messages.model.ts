@@ -60,5 +60,5 @@ directMessageSchema.statics.getOrCreate = function (uid1, uid2) {
 export const DirectMessages = model<IDirectMessages, IDirectMessagesModel>(
     'DirectMessages',
     directMessageSchema,
-    'direct_messages'
+    'messages_direct'
 );

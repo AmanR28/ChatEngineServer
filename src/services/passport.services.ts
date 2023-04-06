@@ -1,24 +1,8 @@
 import passport from 'passport';
-import { Request, Response, NextFunction } from 'express';
-import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
+import { Request } from '../interface/request.interface';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import config from '../config';
-import { IJwtToken, JwtToken } from '../utils/token.utils';
-
-passport.use(
-    new JwtStrategy(
-        {
-            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-            secretOrKey: config.JWT_TOKEN.SECRET_KEY!,
-            passReqToCallback: true,
-        },
-        async (req: Request, jwtToken: string, next: Function) => {
-            let data = JwtToken.process(jwtToken);
-            console.log('data', data);
-            next(data.error, data.user);
-        }
-    )
-);
+import { passportGoogle } from '../interface/google.passport.interface';
 
 passport.use(
     'google',
@@ -37,8 +21,11 @@ passport.use(
             profile: any,
             cb: Function
         ) {
-            const user = {
-                id: profile.id,
+            const user: passportGoogle = {
+                googleId: profile.id,
+                name: profile.displayName,
+                email: profile.email,
+                avatar: profile.avatar,
             };
 
             return cb(null, user);

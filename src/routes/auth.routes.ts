@@ -1,8 +1,11 @@
 import passport from 'passport';
 import { Router } from 'express';
 import authController from '../controller/auth.controller';
+import { isAuth } from '../middlewares';
 
 const router = Router();
+
+router.get('/', isAuth, authController.validate);
 
 router.get(
     '/google',

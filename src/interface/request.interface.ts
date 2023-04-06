@@ -6,3 +6,5 @@ export interface IRequest extends Request {
     JWT_ERROR?: ApplicationError;
     JWT_USER?: IUser | null;
 }
+
+export { Request, Response, NextFunction } from 'express';

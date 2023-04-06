@@ -1,19 +1,42 @@
 import { Request, Response } from 'express';
-import { GoogleAuth, IGoogleAuth } from '../models/google.auth.model';
+import { AuthGoogle, IAuthGoogle } from '../models/google.auth.model';
 import { JwtToken, TokenType } from '../utils/token.utils';
+import { UserProfile } from '../models/profile.user.model';
+import { v4 as uuidv4 } from 'uuid';
+import { IRequest } from '../interface/request.interface';
+import { passportGoogle } from '../interface/google.passport.interface';
+
+const validate = async (req: IRequest, res: Response) => {
+    res.send(req.JWT_USER);
+};
 
 const googleAuth = async (req: Request, res: Response) => {
-    const googleUser = req.user as { id: string };
-    const googleId = googleUser.id;
+    const user = req.user as passportGoogle;
 
-    const user: IGoogleAuth = await GoogleAuth.getOrCreate(googleId);
+    const userAuth = await AuthGoogle.findOne({ googleId: user.googleId });
+
+    let userId: string = userAuth ? userAuth.userId : '';
+
+    if (!userAuth) {
+        userId = uuidv4();
+        await UserProfile.create({
+            userId: userId,
+            name: user.name,
+            email: user.email,
+            avatar: user.avatar,
+        });
+        await AuthGoogle.create({
+            googleId: user.googleId,
+            userId: userId,
+        });
+    }
 
     res.send({
-        token: JwtToken.create(TokenType.AUTH, user.userId),
-        user: user,
+        token: JwtToken.create(TokenType.AUTH, userId),
     });
 };
 
 export default {
+    validate,
     googleAuth,
 };

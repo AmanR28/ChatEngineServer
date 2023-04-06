@@ -1,18 +1,18 @@
 import { Schema, model, Model } from 'mongoose';
 
-export interface IConnectionsUser extends Document {
+export interface IUserConnections extends Document {
     userId: string;
     updatedAt: Date;
     updates: Map<string, string[]>;
     connections: Map<string, string>;
-    getConnection(connUserId: string): Promise<IConnectionsUser>;
+    getConnection(connUserId: string): Promise<IUserConnections>;
 }
 
-export interface IConnectionsUserModel extends Model<IConnectionsUser> {
-    getOrCreate(userId: string): Promise<IConnectionsUser>;
+export interface IUserConnectionsModel extends Model<IUserConnections> {
+    getOrCreate(userId: string): Promise<IUserConnections>;
 }
 
-const connectionsUserSchema = new Schema<IConnectionsUser>({
+const connectionsUserSchema = new Schema<IUserConnections>({
     userId: {
         type: String,
         required: true,
@@ -33,9 +33,9 @@ const connectionsUserSchema = new Schema<IConnectionsUser>({
 
 connectionsUserSchema.statics.getOrCreate = async function (
     userId: string
-): Promise<IConnectionsUser> {
+): Promise<IUserConnections> {
     return (
-        (await ConnectionsUser.findOne({ userId })) || (await ConnectionsUser.create({ userId }))
+        (await UserConnections.findOne({ userId })) || (await UserConnections.create({ userId }))
     );
 };
 
@@ -43,8 +43,8 @@ connectionsUserSchema.methods.getConnection = async function (connUserId: string
     return this.connections[connUserId];
 };
 
-export const ConnectionsUser = model<IConnectionsUser, IConnectionsUserModel>(
-    'ConnectionsUser',
+export const UserConnections = model<IUserConnections, IUserConnectionsModel>(
+    'UserConnections',
     connectionsUserSchema,
     'user_connections'
 );

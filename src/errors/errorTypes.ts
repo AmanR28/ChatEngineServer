@@ -4,9 +4,17 @@ enum ErrorTypes {
     */
     UNAUTHORIZED = 'UNAUTHORIZED',
     // Token Relate
-    TOKEN_UNAVALIABLE = 'TOKEN_UNAVALIABLE',
+    TOKEN_UNAVAILABLE = 'TOKEN_UNAVAILABLE',
     TOKEN_EXPIRED = 'TOKEN_EXPIRED',
     TOKEN_INVALID = 'TOKEN_INVALID',
+
+    /*
+        Bad Request
+     */
+    BAD_REQUEST = 'BAD_REQUEST',
+
+    // Missing Fields
+    MISSING_FIELDS = 'MISSING_FIELDS',
 }
 
 export default ErrorTypes;

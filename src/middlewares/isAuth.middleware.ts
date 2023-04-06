@@ -1,9 +1,6 @@
-import passport from 'passport';
 import { Request, Response, NextFunction } from 'express';
 import { ApplicationError, ErrorTypes, UnAuthorizedError } from '../errors';
-import { IUser } from '../interface/user.interface';
 import { IRequest } from '../interface/request.interface';
-import { ConnectionsUser } from '../models/connections.user.model';
 
 const isAuth = async (req: IRequest, res: Response, next: NextFunction) => {
     try {
