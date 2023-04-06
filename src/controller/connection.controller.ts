@@ -2,43 +2,31 @@ import { NextFunction, Request, Response } from 'express';
 import { IRequest } from '../interface/request.interface';
 import { UserConnections } from '../models/connections.user.model';
 import { DirectMessages } from '../models/direct.messages.model';
-import { ApplicationError } from '../errors';
+import { ApplicationError, BadRequest, ErrorTypes } from '../errors';
 
-const getConnections = async (req: IRequest, res: Response) => {
-    let userId = req.JWT_USER!.id!;
-    let conns = await UserConnections.getOrCreate(userId);
+const connections = async (req: IRequest, res: Response) => {
+    let connId = req.JWT_USER?.connId!;
 
-    return res.send(conns);
+    let conns = await UserConnections.findById(connId, { connections: 1, _id: 0 });
+
+    res.status(200).json({
+        data: conns,
+    });
 };
 
-const getConnection = async (req: IRequest, res: Response, next: NextFunction) => {
+const connect = async (req: IRequest, res: Response, next: NextFunction) => {
     try {
-        let user = req.JWT_USER!;
-
         let connUserId = req.body.userId;
+        if (!connUserId) throw new BadRequest(ErrorTypes.MISSING_FIELDS);
 
-        if (!connUserId) throw new Error('MISSING FIELD');
+        let conn = await UserConnections.findById(req.JWT_USER!.connId, { connections: 1 });
+        let connId = conn!.connections.get(connUserId);
 
-        let userId1, userId2;
-        if (user.id < connUserId) {
-            userId1 = user.id;
-            userId2 = connUserId;
-        } else {
-            userId1 = connUserId;
-            userId2 = user.id;
-        }
+        if (!connId) connId = await DirectMessages.getOrCreateId(req.JWT_USER!.id, connUserId);
 
-        let connId = await user.connections!.getConnection(connUserId);
-        if (!connId) {
-            console.log('not');
-            connId = await DirectMessages.getOrCreate(userId1, userId2);
-            await UserConnections.updateOne(
-                { userId: user.id },
-                { $set: { [`connections.${connUserId}`]: connId } }
-            );
-        }
-
-        res.send(connId);
+        res.status(200).json({
+            data: connId,
+        });
     } catch (error) {
         if (error instanceof ApplicationError) {
             return next(error);
@@ -48,7 +36,7 @@ const getConnection = async (req: IRequest, res: Response, next: NextFunction) =
     }
 };
 
-const getUpdates = async (req: IRequest, res: Response) => {
+const updates = async (req: IRequest, res: Response) => {
     let userId = req.JWT_USER!.id!;
     let updates = await UserConnections.findOne({ userId }, { updatedAt: 1 });
     if (!updates) {
@@ -58,7 +46,7 @@ const getUpdates = async (req: IRequest, res: Response) => {
 };
 
 export default {
-    getConnections,
-    getConnection,
-    getUpdates,
+    connections,
+    connect,
+    updates,
 };

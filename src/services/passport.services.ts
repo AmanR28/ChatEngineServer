@@ -24,8 +24,8 @@ passport.use(
             const user: passportGoogle = {
                 googleId: profile.id,
                 name: profile.displayName,
-                email: profile.email,
-                avatar: profile.avatar,
+                email: profile.emails[0].value,
+                avatar: profile.photos[0].value,
             };
 
             return cb(null, user);

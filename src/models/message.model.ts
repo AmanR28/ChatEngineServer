@@ -1,13 +1,13 @@
 import { Schema } from 'mongoose';
 
-export interface IMessage extends Document {
+export interface IDMessage extends Document {
     msgId: string;
     userId: string;
     msg: string;
     sendAt: Date;
 }
 
-export const messageSchema = new Schema<IMessage>({
+export const dMessageSchema = new Schema<IDMessage>({
     msgId: {
         type: String,
         required: true,

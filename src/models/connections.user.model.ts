@@ -1,4 +1,4 @@
-import { Schema, model, Model } from 'mongoose';
+import { Schema, model, Model, ObjectId } from 'mongoose';
 
 export interface IUserConnections extends Document {
     userId: string;
@@ -9,7 +9,7 @@ export interface IUserConnections extends Document {
 }
 
 export interface IUserConnectionsModel extends Model<IUserConnections> {
-    getOrCreate(userId: string): Promise<IUserConnections>;
+    getOrCreateId(userId: string): Promise<ObjectId>;
 }
 
 const connectionsUserSchema = new Schema<IUserConnections>({
@@ -20,23 +20,31 @@ const connectionsUserSchema = new Schema<IUserConnections>({
     },
     updatedAt: {
         type: Date,
+        required: true,
     },
     updates: {
         type: Map,
         of: [String],
+        required: true,
     },
     connections: {
         type: Map,
         of: String,
+        required: true,
     },
 });
 
-connectionsUserSchema.statics.getOrCreate = async function (
-    userId: string
-): Promise<IUserConnections> {
-    return (
-        (await UserConnections.findOne({ userId })) || (await UserConnections.create({ userId }))
-    );
+connectionsUserSchema.statics.getOrCreateId = async function (userId: string): Promise<ObjectId> {
+    let conn = await UserConnections.findOne({ userId });
+    if (!conn) {
+        conn = await UserConnections.create({
+            userId,
+            updatedAt: Date.now(),
+            updates: {},
+            connections: {},
+        });
+    }
+    return conn.id;
 };
 
 connectionsUserSchema.methods.getConnection = async function (connUserId: string) {

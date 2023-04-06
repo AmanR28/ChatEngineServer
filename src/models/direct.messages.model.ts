@@ -1,6 +1,8 @@
 import { Schema, model, Model } from 'mongoose';
-import { IMessage, messageSchema } from './message.model';
+import { IDMessage, dMessageSchema } from './message.model';
 import { v4 as uuidv4 } from 'uuid';
+import { UserConnections } from './connections.user.model';
+import { NotFound } from '../errors';
 
 export * from './message.model';
 
@@ -8,11 +10,11 @@ export interface IDirectMessages extends Document {
     connId: string;
     userId1: string;
     userId2: string;
-    messages: Map<string, IMessage>;
+    messages: Map<string, IDMessage>;
 }
 
 export interface IDirectMessagesModel extends Model<IDirectMessages> {
-    getOrCreate(uid1: string, uid2: string): any;
+    getOrCreateId(uid1: string, uid2: string): Promise<string>;
 }
 
 const directMessageSchema = new Schema<IDirectMessages>({
@@ -32,13 +34,13 @@ const directMessageSchema = new Schema<IDirectMessages>({
     },
     messages: {
         type: Map,
-        of: messageSchema,
+        of: dMessageSchema,
     },
 });
 
 directMessageSchema.index({ userId1: 1, userId2: 1 });
 
-directMessageSchema.statics.getOrCreate = function (uid1, uid2) {
+directMessageSchema.statics.getOrCreateId = async function (uid1, uid2) {
     let userId1, userId2;
     if (uid1 < uid2) {
         userId1 = uid1;
@@ -48,13 +50,23 @@ directMessageSchema.statics.getOrCreate = function (uid1, uid2) {
         userId2 = uid1;
     }
 
-    let conn: any = DirectMessages.findOne({ userId1, userId2 });
+    let conn = await DirectMessages.findOne({ userId1, userId2 });
 
     if (!conn) {
-        conn = DirectMessages.create({ connId: uuidv4(), userId1, userId2 });
+        let conn1 = await UserConnections.findOne({ userId: userId1 });
+        let conn2 = await UserConnections.findOne({ userId: userId2 });
+        if (!conn1 || !conn2) throw new NotFound('Missing User');
+
+        conn = await DirectMessages.create({ connId: uuidv4(), userId1, userId2 });
+
+        conn1.connections.set(userId2, conn.connId);
+        conn2.connections.set(userId1, conn.connId);
+
+        await conn1.save();
+        await conn2.save();
     }
 
-    return conn;
+    return conn!.connId;
 };
 
 export const DirectMessages = model<IDirectMessages, IDirectMessagesModel>(

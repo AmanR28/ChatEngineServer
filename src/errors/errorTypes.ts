@@ -15,6 +15,11 @@ enum ErrorTypes {
 
     // Missing Fields
     MISSING_FIELDS = 'MISSING_FIELDS',
+
+    /* 
+        Not Found
+    */
+    NOT_FOUND = 'NOT_FOUND',
 }
 
 export default ErrorTypes;

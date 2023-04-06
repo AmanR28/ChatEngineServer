@@ -4,8 +4,8 @@ import connectionController from '../controller/connection.controller';
 
 const router = Router();
 
-router.get('/', isAuth, connectionController.getConnections);
-router.get('/updates', isAuth, connectionController.getUpdates);
-router.get('/connect', isAuth, connectionController.getConnection);
+router.get('/', isAuth, connectionController.connections);
+router.get('/updates', isAuth, connectionController.updates);
+router.get('/connect', isAuth, connectionController.connect);
 
 export default router;

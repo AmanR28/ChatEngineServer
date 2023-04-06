@@ -1,4 +1,4 @@
-import { Schema, model, Model } from 'mongoose';
+import { Schema, model, Model, ObjectId } from 'mongoose';
 import { UserConnections } from './connections.user.model';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -9,7 +9,9 @@ export interface IUserProfile extends Document {
     avatar: string;
 }
 
-export interface IUserProfileModel extends Model<IUserProfile> {}
+export interface IUserProfileModel extends Model<IUserProfile> {
+    getOrCreateId(userId: string): Promise<ObjectId>;
+}
 
 const userProfile = new Schema<IUserProfile>({
     userId: {
@@ -20,32 +22,25 @@ const userProfile = new Schema<IUserProfile>({
     },
     name: {
         type: String,
+        required: true,
     },
     email: {
         type: String,
+        required: true,
     },
     avatar: {
         type: String,
+        required: true,
     },
 });
 
-userProfile.methods.toJSON = function () {
-    const profile = this.toObject();
-    profile.id = profile._id; // remap _id to id
-
-    delete profile._id;
-    delete profile.password;
-    delete profile.__v;
-    return profile;
+userProfile.statics.getOrCreateId = async function (userId: string): Promise<ObjectId> {
+    let conn = await UserProfile.findOne({ userId });
+    if (!conn) {
+        conn = await UserProfile.create({ userId, name: '', email: '', avatar: '' });
+    }
+    return conn.id;
 };
-
-userProfile.post('save', async function () {
-    await UserConnections.create({
-        userId: this.userId,
-        updatedAt: Date.now(),
-        updates: {},
-    });
-});
 
 export const UserProfile = model<IUserProfile, IUserProfileModel>(
     'UserProfile',
