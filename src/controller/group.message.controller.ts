@@ -1,25 +1,22 @@
 import { IRequest, NextFunction, Response } from '../interface/request.interface';
 import { ApplicationError, BadRequest, ErrorTypes, NotFound, UnAuthorizedError } from '../errors';
-import { DirectMessages, IMessage, msgType } from '../models/direct.messages.model';
 import { UserConnections } from '../models/connections.user.model';
 import { ObjectId } from 'mongoose';
+import { GroupMessages, IMessage, msgType } from '../models/group.messages.model';
 
-const getConnection = async (id: ObjectId, connUserId: string) => {
-    const connIds = await UserConnections.findById(id, {
-        directConnections: 1,
-    });
-    const connId = connIds?.directConnections.get(connUserId);
-    if (!connId) throw new NotFound(ErrorTypes.CONNECTION_NOT_FOUND);
-
-    return await DirectMessages.findOne({ connId });
+const validateConnection = async (uid: string, cId: string) => {
+    const conn = await GroupMessages.findOne({ connId: cId });
+    if (!conn) throw new NotFound(ErrorTypes.CONNECTION_NOT_FOUND);
+    if (!conn.users.includes(uid)) throw new UnAuthorizedError('Not Connected');
+    return conn;
 };
 
 const send = async (req: IRequest, res: Response, next: NextFunction) => {
     try {
-        let { message, connUserId } = req.body;
-        if (!message || !connUserId) throw new BadRequest(ErrorTypes.MISSING_FIELDS);
+        let { message, connId } = req.body;
+        if (!message || !connId) throw new BadRequest(ErrorTypes.MISSING_FIELDS);
 
-        const conn = await getConnection(req.JWT_USER!.connsId!, connUserId);
+        const conn = await validateConnection(req.JWT_USER!.id, connId);
 
         const msg: IMessage = {
             msgId: '',
@@ -46,10 +43,10 @@ const send = async (req: IRequest, res: Response, next: NextFunction) => {
 
 const get = async (req: IRequest, res: Response, next: NextFunction) => {
     try {
-        let { msgId, connUserId } = req.body;
-        if (!msgId || !connUserId) throw new BadRequest(ErrorTypes.MISSING_FIELDS);
+        let { msgId, connId } = req.body;
+        if (!msgId || !connId) throw new BadRequest(ErrorTypes.MISSING_FIELDS);
 
-        const conn = await getConnection(req.JWT_USER!.connsId!, connUserId);
+        const conn = await validateConnection(req.JWT_USER!.id, connId);
 
         const msg = conn!.messages.get(msgId);
 
@@ -70,10 +67,10 @@ const get = async (req: IRequest, res: Response, next: NextFunction) => {
 
 const getAll = async (req: IRequest, res: Response, next: NextFunction) => {
     try {
-        let { connUserId } = req.body;
-        if (!connUserId) throw new BadRequest(ErrorTypes.MISSING_FIELDS);
+        let { connId } = req.body;
+        if (!connId) throw new BadRequest(ErrorTypes.MISSING_FIELDS);
 
-        const conn = await getConnection(req.JWT_USER!.connsId!, connUserId);
+        const conn = await validateConnection(req.JWT_USER!.id, connId);
 
         res.status(200).json({
             status: 'SUCCESS',
@@ -90,12 +87,12 @@ const getAll = async (req: IRequest, res: Response, next: NextFunction) => {
 
 const read = async (req: IRequest, res: Response, next: NextFunction) => {
     try {
-        let { msgId, connUserId } = req.body;
-        if (!msgId || !connUserId) throw new BadRequest(ErrorTypes.MISSING_FIELDS);
+        let { msgId, connId } = req.body;
+        if (!msgId || !connId) throw new BadRequest(ErrorTypes.MISSING_FIELDS);
 
         const result = await UserConnections.updateOne(
             { userId: req.JWT_USER!.id },
-            { $pull: { [`updates.${connUserId}`]: msgId } }
+            { $pull: { [`updates.${connId}`]: msgId } }
         );
 
         if (!result.modifiedCount) throw new NotFound(ErrorTypes.MESSAGE_NOT_FOUND);
@@ -114,12 +111,12 @@ const read = async (req: IRequest, res: Response, next: NextFunction) => {
 
 const readAll = async (req: IRequest, res: Response, next: NextFunction) => {
     try {
-        let { connUserId } = req.body;
-        if (!connUserId) throw new BadRequest(ErrorTypes.MISSING_FIELDS);
+        let { connID } = req.body;
+        if (!connID) throw new BadRequest(ErrorTypes.MISSING_FIELDS);
 
         await UserConnections.updateOne(
             { userId: req.JWT_USER!.id },
-            { $unset: { [`updates.${connUserId}`]: '' } }
+            { $unset: { [`updates.${connID}`]: '' } }
         );
 
         res.status(200).json({

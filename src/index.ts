@@ -5,7 +5,13 @@ import config from './config';
 import passport from 'passport';
 import mongoose from 'mongoose';
 import { currentUser, errorHandler } from './middlewares';
-import { authRoutes, profileRoutes, connectionRoutes, directMessagesRoutes } from './routes';
+import {
+    authRoutes,
+    profileRoutes,
+    connectionRoutes,
+    directMessagesRoutes,
+    groupMessagesRoutes,
+} from './routes';
 
 import './db';
 
@@ -24,6 +30,7 @@ app.use('/auth', authRoutes);
 app.use('/profile', profileRoutes);
 app.use('/connection', connectionRoutes);
 app.use('/message/direct', directMessagesRoutes);
+app.use('/message/group', groupMessagesRoutes);
 
 app.use(errorHandler);
 

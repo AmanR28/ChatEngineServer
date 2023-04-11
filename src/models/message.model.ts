@@ -5,7 +5,7 @@ export enum msgType {
     IMAGE = 'IMAGE',
     FILE = 'FILE',
 }
-export interface IDMessage {
+export interface IMessage {
     msgId: string;
     type: msgType;
     msg: string;
@@ -13,7 +13,7 @@ export interface IDMessage {
     sendAt: Date;
 }
 
-export const dMessageSchema = new Schema<IDMessage>(
+export const messageSchema = new Schema<IMessage>(
     {
         msgId: {
             type: String,
@@ -45,7 +45,7 @@ export const dMessageSchema = new Schema<IDMessage>(
     }
 );
 
-dMessageSchema.methods.toJSON = function () {
+messageSchema.methods.toJSON = function () {
     const msg = this.toObject();
     delete msg._id;
     delete msg.__v;

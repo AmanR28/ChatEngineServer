@@ -1,5 +1,5 @@
 import { Schema, model, Model } from 'mongoose';
-import { IDMessage, dMessageSchema } from './message.model';
+import { IMessage, messageSchema } from './message.model';
 import { v4 as uuidv4 } from 'uuid';
 import { UserConnections } from './connections.user.model';
 import { NotFound } from '../errors';
@@ -10,8 +10,8 @@ export interface IDirectMessages {
     connId: string;
     userId1: string;
     userId2: string;
-    messages: Map<string, IDMessage>;
-    send(message: IDMessage): Promise<null>;
+    messages: Map<string, IMessage>;
+    send(message: IMessage): Promise<null>;
 }
 
 export interface IDirectMessagesModel extends Model<IDirectMessages> {
@@ -35,7 +35,7 @@ const directMessageSchema = new Schema<IDirectMessages>({
     },
     messages: {
         type: Map,
-        of: dMessageSchema,
+        of: messageSchema,
         required: true,
     },
 });
@@ -66,8 +66,8 @@ directMessageSchema.statics.getOrCreateId = async function (uid1, uid2) {
             messages: {},
         });
 
-        conn1.connections.set(userId2, conn.connId);
-        conn2.connections.set(userId1, conn.connId);
+        conn1.directConnections.set(userId2, conn.connId);
+        conn2.directConnections.set(userId1, conn.connId);
 
         await conn1.save();
         await conn2.save();
@@ -76,11 +76,9 @@ directMessageSchema.statics.getOrCreateId = async function (uid1, uid2) {
     return conn!.connId;
 };
 
-directMessageSchema.methods.send = async function (message: IDMessage) {
+directMessageSchema.methods.send = async function (message: IMessage) {
     let msgId = uuidv4();
     message.msgId = msgId;
-
-    console.log(this.messages);
 
     this.messages.set(msgId, message);
     await this.save();

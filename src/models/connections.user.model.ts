@@ -4,7 +4,9 @@ export interface IUserConnections extends Document {
     userId: string;
     updatedAt: Date;
     updates: Map<string, string[]>;
-    connections: Map<string, string>;
+    directConnections: Map<string, string>;
+    groupConnections: Map<string, string>;
+    botConnections: Map<string, string>;
 }
 
 export interface IUserConnectionsModel extends Model<IUserConnections> {
@@ -26,7 +28,17 @@ const connectionsUserSchema = new Schema<IUserConnections>({
         of: [String],
         required: true,
     },
-    connections: {
+    directConnections: {
+        type: Map,
+        of: String,
+        required: true,
+    },
+    groupConnections: {
+        type: Map,
+        of: String,
+        required: true,
+    },
+    botConnections: {
         type: Map,
         of: String,
         required: true,
@@ -40,7 +52,9 @@ connectionsUserSchema.statics.getOrCreateId = async function (userId: string): P
             userId,
             updatedAt: Date.now(),
             updates: {},
-            connections: {},
+            directConnections: {},
+            groupConnections: {},
+            botConnections: {},
         });
     }
     return conn.id;
