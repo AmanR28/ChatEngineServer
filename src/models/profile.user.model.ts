@@ -13,23 +13,31 @@ export interface IUserProfileModel extends Model<IUserProfile> {
     getOrCreateId(userId: string): Promise<ObjectId>;
 }
 
-const userProfile = new Schema<IUserProfile>({
-    userId: {
-        type: String,
-        index: true,
-        required: true,
-        unique: true,
+const userProfile = new Schema<IUserProfile>(
+    {
+        userId: {
+            type: String,
+            index: true,
+            required: true,
+            unique: true,
+        },
+        name: {
+            type: String,
+        },
+        email: {
+            type: String,
+        },
+        avatar: {
+            type: String,
+        },
     },
-    name: {
-        type: String,
-    },
-    email: {
-        type: String,
-    },
-    avatar: {
-        type: String,
-    },
-});
+    {
+        toJSON: {
+            virtuals: true,
+            getters: true,
+        },
+    }
+);
 
 userProfile.statics.getOrCreateId = async function (userId: string): Promise<ObjectId> {
     let conn = await UserProfile.findOne({ userId });
@@ -37,6 +45,13 @@ userProfile.statics.getOrCreateId = async function (userId: string): Promise<Obj
         conn = await UserProfile.create({ userId, name: '', email: '', avatar: '' });
     }
     return conn.id;
+};
+
+userProfile.methods.toJSON = function () {
+    const msg = this.toObject();
+    delete msg._id;
+    delete msg.__v;
+    return msg;
 };
 
 export const UserProfile = model<IUserProfile, IUserProfileModel>(

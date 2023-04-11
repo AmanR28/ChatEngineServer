@@ -6,7 +6,6 @@ const getProfile = async (req: IRequest, res: Response) => {
     let userId = req.body.userId ? req.body.userId : req.JWT_USER!.id!;
 
     const profile = await UserProfile.findOne({ userId });
-    console.log(profile);
     res.status(200).json({ data: profile });
 };
 

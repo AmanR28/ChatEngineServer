@@ -59,7 +59,12 @@ directMessageSchema.statics.getOrCreateId = async function (uid1, uid2) {
         let conn2 = await UserConnections.findOne({ userId: userId2 });
         if (!conn1 || !conn2) throw new NotFound('Missing User');
 
-        conn = await DirectMessages.create({ connId: uuidv4(), userId1, userId2, messages: {} });
+        conn = await DirectMessages.create({
+            connId: userId1 + userId2,
+            userId1,
+            userId2,
+            messages: {},
+        });
 
         conn1.connections.set(userId2, conn.connId);
         conn2.connections.set(userId1, conn.connId);

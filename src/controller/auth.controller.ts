@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import { AuthGoogle } from '../models/google.auth.model';
 import { JwtToken, TokenType } from '../utils/token.utils';
 import { UserProfile } from '../models/profile.user.model';
-import { v4 as uuidv4 } from 'uuid';
 import { IRequest } from '../interface/request.interface';
 import { passportGoogle } from '../interface/google.passport.interface';
 
@@ -18,7 +17,7 @@ const googleAuth = async (req: Request, res: Response) => {
     let userId: string = userAuth ? userAuth.userId : '';
 
     if (!userAuth) {
-        userId = uuidv4();
+        userId = user.name.split(' ')[0] + user.googleId.slice(-3);
         await UserProfile.create({
             userId: userId,
             name: user.name,

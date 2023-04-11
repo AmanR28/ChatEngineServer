@@ -25,7 +25,9 @@ const connect = async (req: IRequest, res: Response, next: NextFunction) => {
         if (!connId) connId = await DirectMessages.getOrCreateId(req.JWT_USER!.id, connUserId);
 
         res.status(200).json({
-            data: connId,
+            data: {
+                connId: connId,
+            },
         });
     } catch (error) {
         if (error instanceof ApplicationError) {
