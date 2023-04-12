@@ -44,6 +44,36 @@ const send = async (req: IRequest, res: Response, next: NextFunction) => {
     }
 };
 
+const sendFile = async (req: IRequest, res: Response, next: NextFunction) => {
+    try {
+        let { message, connUserId, type } = req.body;
+        if (!message || !connUserId) throw new BadRequest(ErrorTypes.MISSING_FIELDS);
+
+        const conn = await getConnection(req.JWT_USER!.connsId!, connUserId);
+
+        const msg: IMessage = {
+            msgId: '',
+            type,
+            msg: message,
+            sendBy: req.JWT_USER!.id,
+            sendAt: new Date(),
+        };
+
+        await conn!.send(msg);
+
+        res.status(200).json({
+            status: 'SUCCESS',
+            data: msg,
+        });
+    } catch (error) {
+        if (error instanceof ApplicationError) {
+            return next(error);
+        }
+        console.log('send', error);
+        return next(new Error('SYSTEM FAILURE'));
+    }
+};
+
 const get = async (req: IRequest, res: Response, next: NextFunction) => {
     try {
         let { msgId, connUserId } = req.body;
@@ -137,6 +167,7 @@ const readAll = async (req: IRequest, res: Response, next: NextFunction) => {
 
 export default {
     send,
+    sendFile,
     get,
     getAll,
     read,

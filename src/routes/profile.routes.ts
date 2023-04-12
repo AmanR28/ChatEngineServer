@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import userController from '../controller/profile.controller';
 import isAuth from '../middlewares/isAuth.middleware';
-import uploader from '../middlewares/upload.middleware';
+import { avatarUploader } from '../middlewares/upload.middleware';
 
 const router = Router();
 
 router.get('/', isAuth, userController.getProfile);
-router.post('/', isAuth, uploader.profileImage, userController.updateProfile);
+router.post('/', isAuth, avatarUploader, userController.updateProfile);
 
 export default router;

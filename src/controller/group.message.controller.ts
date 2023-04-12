@@ -13,14 +13,44 @@ const validateConnection = async (uid: string, cId: string) => {
 
 const send = async (req: IRequest, res: Response, next: NextFunction) => {
     try {
-        let { message, connId } = req.body;
+        let { message, connId, type } = req.body;
         if (!message || !connId) throw new BadRequest(ErrorTypes.MISSING_FIELDS);
 
         const conn = await validateConnection(req.JWT_USER!.id, connId);
 
         const msg: IMessage = {
             msgId: '',
-            type: msgType.TEXT,
+            type,
+            msg: message,
+            sendBy: req.JWT_USER!.id,
+            sendAt: new Date(),
+        };
+
+        await conn!.send(msg);
+
+        res.status(200).json({
+            status: 'SUCCESS',
+            data: msg,
+        });
+    } catch (error) {
+        if (error instanceof ApplicationError) {
+            return next(error);
+        }
+        console.log('send', error);
+        return next(new Error('SYSTEM FAILURE'));
+    }
+};
+
+const sendFile = async (req: IRequest, res: Response, next: NextFunction) => {
+    try {
+        let { message, connId, type } = req.body;
+        if (!message || !connId) throw new BadRequest(ErrorTypes.MISSING_FIELDS);
+
+        const conn = await validateConnection(req.JWT_USER!.id, connId);
+
+        const msg: IMessage = {
+            msgId: '',
+            type,
             msg: message,
             sendBy: req.JWT_USER!.id,
             sendAt: new Date(),
@@ -134,6 +164,7 @@ const readAll = async (req: IRequest, res: Response, next: NextFunction) => {
 
 export default {
     send,
+    sendFile,
     get,
     getAll,
     read,

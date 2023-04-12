@@ -3,6 +3,7 @@ import { Schema } from 'mongoose';
 export enum msgType {
     TEXT = 'TEXT',
     IMAGE = 'IMAGE',
+    AUDIO = 'AUDIO',
     FILE = 'FILE',
 }
 export interface IMessage {

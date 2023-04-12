@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 import config from './config';
 import passport from 'passport';
 import mongoose from 'mongoose';
+import multer from 'multer';
 import { currentUser, errorHandler } from './middlewares';
 import {
     authRoutes,

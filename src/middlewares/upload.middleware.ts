@@ -1,8 +1,10 @@
 import multer from 'multer';
-import { profileStorage } from '../services/multer.services';
+import { fileStorage, profileStorage } from '../services/multer.services';
 
-export default {
-    profileImage: multer({
-        storage: profileStorage,
-    }).single('avatar'),
-};
+export const avatarUploader = multer({
+    storage: profileStorage,
+}).single('avatar');
+
+export const chatUploader = multer({
+    storage: fileStorage,
+}).single('file');
