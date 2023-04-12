@@ -22,10 +22,10 @@ app.use(bodyParser.json());
 
 app.use(morgan('combined'));
 
+app.use(currentUser);
+
 app.use(passport.initialize());
 require('./services/passport.services');
-
-app.use(currentUser);
 
 app.use('/auth', authRoutes);
 app.use('/profile', profileRoutes);

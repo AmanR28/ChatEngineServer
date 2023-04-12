@@ -28,9 +28,11 @@ const googleAuth = async (req: Request, res: Response) => {
             googleId: user.googleId,
             userId: userId,
         });
+    } else {
+        await UserProfile.updateOne({ userId }, { $set: { lastSeen: new Date() } });
     }
 
-    res.send({
+    return res.send({
         token: JwtToken.create(TokenType.AUTH, userId),
     });
 };

@@ -21,7 +21,6 @@ passport.use(
             profile: any,
             cb: Function
         ) {
-            console.log(profile);
             const user: passportGoogle = {
                 googleId: profile.id,
                 name: profile.displayName,

@@ -7,6 +7,7 @@ export interface IUserProfile extends Document {
     name: string;
     email: string;
     avatar: string;
+    lastSeen: Date;
 }
 
 export interface IUserProfileModel extends Model<IUserProfile> {
@@ -29,6 +30,10 @@ const userProfile = new Schema<IUserProfile>(
         },
         avatar: {
             type: String,
+        },
+        lastSeen: {
+            type: Date,
+            default: new Date(),
         },
     },
     {
