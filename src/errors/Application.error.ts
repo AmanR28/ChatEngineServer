@@ -8,7 +8,7 @@ export class ApplicationError extends Error {
     public message: string;
     public status: string;
 
-    constructor(message: errorTypes | string, status: errorTypes, statusCode: number) {
+    constructor(message: errorTypes | string, status: errorTypes | string, statusCode: number) {
         super(message);
         Error.captureStackTrace(this, this.constructor);
         this.statusCode = statusCode;

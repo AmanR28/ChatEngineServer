@@ -4,7 +4,6 @@ import bodyParser from 'body-parser';
 import config from './config';
 import passport from 'passport';
 import mongoose from 'mongoose';
-import multer from 'multer';
 import { currentUser, errorHandler } from './middlewares';
 import {
     authRoutes,
@@ -12,6 +11,7 @@ import {
     connectionRoutes,
     directMessagesRoutes,
     groupMessagesRoutes,
+    botMessagesRoutes,
 } from './routes';
 
 import './db';
@@ -32,6 +32,7 @@ app.use('/profile', profileRoutes);
 app.use('/connection', connectionRoutes);
 app.use('/message/direct', directMessagesRoutes);
 app.use('/message/group', groupMessagesRoutes);
+app.use('/message/bot', botMessagesRoutes);
 
 app.use(errorHandler);
 

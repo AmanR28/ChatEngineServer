@@ -6,6 +6,8 @@ import { ApplicationError, BadRequest, ErrorTypes, NotFound, UnAuthorizedError }
 import { connTypes } from '../interface/types.connections.interface';
 import { IGroupMessages, GroupMessages } from '../models/group.messages.model';
 import { randomInt } from 'crypto';
+import { Bots } from '../models/bots.models';
+import { BotMessages } from '../models/bots.messages.model';
 
 const connections = async (req: IRequest, res: Response) => {
     let connId = req.JWT_USER?.connsId!;
@@ -103,12 +105,53 @@ const connectGroup = async (req: IRequest, res: Response, next: NextFunction) =>
     }
 };
 
-const connectChat = async (req: IRequest, res: Response, next: NextFunction) => {};
+const connectBot = async (req: IRequest, res: Response, next: NextFunction) => {
+    try {
+        let { botId } = req.body;
+        if (!botId) throw new BadRequest('Missing BotId');
+
+        let userId = req.JWT_USER!.id;
+
+        const bot = await Bots.findOne({ botId });
+        if (!bot) throw new NotFound('Missing Bot');
+
+        let conn = await UserConnections.findById(req.JWT_USER!.connsId);
+
+        let connId = conn?.botConnections.get(botId);
+
+        if (!connId) {
+            connId = userId + botId;
+            await BotMessages.create({
+                connId,
+                userId,
+                botId,
+            });
+
+            conn?.botConnections.set(botId, connId);
+            await conn?.save();
+
+            bot.connections.set(connId, userId);
+            await bot.save();
+        }
+
+        return res.status(200).json({
+            data: {
+                connId,
+            },
+        });
+    } catch (error) {
+        if (error instanceof ApplicationError) {
+            return next(error);
+        }
+        console.log('getConnection', error);
+        return next(new Error('SYSTEM FAILURE'));
+    }
+};
 
 export default {
     connections,
     updates,
     connectDirect,
     connectGroup,
-    connectChat,
+    connectBot,
 };

@@ -11,7 +11,7 @@ const currentUser = async (req: IRequest, res: Response, next: NextFunction) => 
             return next();
         }
 
-        let payload = JwtToken.process(token);
+        let payload = JwtToken.processAuth(token);
 
         if (payload.error) req.JWT_ERROR = payload.error;
         else {

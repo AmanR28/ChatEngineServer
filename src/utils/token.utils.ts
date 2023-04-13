@@ -5,6 +5,7 @@ import { IUser } from '../interface/user.interface';
 
 export enum TokenType {
     AUTH = 'AUTH',
+    BOT = 'BOT',
 }
 
 export interface IJwtToken {
@@ -25,19 +26,32 @@ export const JwtToken = {
         return token;
     },
 
-    process: (token: string): { error: ApplicationError | null; user?: IUser | null } => {
+    processAuth: (token: string): { error: ApplicationError | null; user?: IUser | null } => {
         let jwtToken = jwt.verify(token, config.JWT_TOKEN.SECRET_KEY!) as IJwtToken;
         if (!jwtToken.expiry || new Date(jwtToken.expiry).getTime() < Date.now())
             return { error: new UnAuthorizedError(ErrorTypes.TOKEN_EXPIRED) };
 
         if (jwtToken.type !== TokenType.AUTH)
-            return { error: new UnAuthorizedError(ErrorTypes.TOKEN_EXPIRED) };
+            return { error: new UnAuthorizedError(ErrorTypes.TOKEN_INVALID) };
 
         const user: IUser = {
             id: jwtToken.id,
         };
 
         return { error: null, user };
+    },
+
+    process: (token: string): { error: ApplicationError | null; payload?: any } => {
+        let jwtToken = jwt.verify(token, config.JWT_TOKEN.SECRET_KEY!) as IJwtToken;
+        if (!jwtToken.expiry || new Date(jwtToken.expiry).getTime() < Date.now())
+            return { error: new UnAuthorizedError(ErrorTypes.TOKEN_EXPIRED) };
+
+        const payload = {
+            id: jwtToken.id,
+            type: jwtToken.type,
+        };
+
+        return { error: null, payload };
     },
 };
 

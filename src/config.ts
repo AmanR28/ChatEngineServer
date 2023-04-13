@@ -20,6 +20,10 @@ const config = {
     MULTER: {
         UPLOAD_PATH: process.env.UPLOAD_PATH,
     },
+    BOTS: {
+        URL: process.env.BOTS_URL,
+        CONV_LIMIT: 10,
+    },
 };
 
 export default config;
