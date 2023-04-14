@@ -1,0 +1,61 @@
+# docker-compose.yml
+
+version: '3.9'
+
+services:
+    app:
+        build: .
+        ports:
+            - '3000:3000'
+        depends_on:
+            - mongo
+        environment:
+            - MONGO_URI=mongodb://mongo:27017/cnlab
+            - UPLOAD_PATH=/uploads
+        env_file:
+            - .env
+        volumes:
+            - uploads:/uploads
+        networks:
+            - default
+
+    mongo:
+        image: mongo:6
+        ports:
+            - '27017:27017'
+        volumes:
+            - mongo_data:/data/db
+        networks:
+            - default
+
+    mongo-express:
+        image: mongo-express
+        ports:
+            - '8081:8081'
+        environment:
+            ME_CONFIG_MONGODB_SERVER: mongo
+        networks:
+            - default
+        depends_on:
+            - mongo
+
+    nginx:
+        image: nginx:stable
+        ports:
+            - '80:80'
+        volumes:
+            - ./nginx.conf:/etc/nginx/nginx.conf
+            - uploads:/uploads
+        depends_on:
+            - app
+        networks:
+            - default
+
+networks:
+    default:
+        driver: bridge
+
+volumes:
+    mongo_data:
+
+    uploads:

@@ -26,7 +26,7 @@ const connections = async (req: IRequest, res: Response) => {
 
 const updates = async (req: IRequest, res: Response) => {
     let userId = req.JWT_USER!.id!;
-    let updates = await UserConnections.findOne({ userId }, { updatedAt: 1 });
+    let updates = await UserConnections.findOne({ userId }, { updatedAt: 1, updates: 1 });
     if (!updates) {
         return res.send('Connections Doest Exist');
     }
