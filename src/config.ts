@@ -24,6 +24,9 @@ const config = {
         URL: process.env.BOTS_URL,
         CONV_LIMIT: 10,
     },
+    MESSAGES: {
+        DISAPPEAR_TIME: 1000 * 60 * 60 * 1,
+    },
 };
 
 export default config;

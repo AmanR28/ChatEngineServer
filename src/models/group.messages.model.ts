@@ -10,7 +10,7 @@ export interface IGroupMessages {
     name: string;
     users: string[];
     messages: Map<string, IMessage>;
-    send(message: IMessage): Promise<null>;
+    send(message: IMessage): Promise<string>;
     connect(userId: string): Promise<null>;
 }
 
@@ -72,7 +72,7 @@ groupMessageSchema.methods.send = async function (message: IMessage) {
     let updates = 'updates.' + this.connId;
     await UserConnections.updateMany({ userId: { $in: users } }, { $push: { [updates]: msgId } });
 
-    return null;
+    return msgId;
 };
 
 export const GroupMessages = model<IGroupMessages, IGroupMessagesModel>(

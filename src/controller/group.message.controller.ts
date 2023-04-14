@@ -3,6 +3,9 @@ import { ApplicationError, BadRequest, ErrorTypes, NotFound, UnAuthorizedError }
 import { UserConnections } from '../models/connections.user.model';
 import { ObjectId } from 'mongoose';
 import { GroupMessages, IMessage, msgType } from '../models/group.messages.model';
+import { DisappearMessage } from '../models/disappering.messages.model';
+import { connTypes } from '../interface/types.connections.interface';
+import config from '../config';
 
 const validateConnection = async (uid: string, cId: string) => {
     const conn = await GroupMessages.findOne({ connId: cId });
@@ -13,20 +16,29 @@ const validateConnection = async (uid: string, cId: string) => {
 
 const send = async (req: IRequest, res: Response, next: NextFunction) => {
     try {
-        let { message, connId, type } = req.body;
+        let { message, connId, isDisappearing } = req.body;
         if (!message || !connId) throw new BadRequest(ErrorTypes.MISSING_FIELDS);
 
         const conn = await validateConnection(req.JWT_USER!.id, connId);
 
         const msg: IMessage = {
             msgId: '',
-            type,
+            type: msgType.TEXT,
             msg: message,
             sendBy: req.JWT_USER!.id,
             sendAt: new Date(),
         };
 
-        await conn!.send(msg);
+        const msgId = await conn!.send(msg);
+
+        if (isDisappearing) {
+            DisappearMessage.create({
+                msgId,
+                type: connTypes.GROUP,
+                connId: conn!.connId,
+                expiry: new Date(Date.now() + config.MESSAGES.DISAPPEAR_TIME),
+            });
+        }
 
         res.status(200).json({
             status: 'SUCCESS',
@@ -43,7 +55,7 @@ const send = async (req: IRequest, res: Response, next: NextFunction) => {
 
 const sendFile = async (req: IRequest, res: Response, next: NextFunction) => {
     try {
-        let { message, connId, type } = req.body;
+        let { message, connId, type, isDisappearing } = req.body;
         if (!message || !connId) throw new BadRequest(ErrorTypes.MISSING_FIELDS);
 
         const conn = await validateConnection(req.JWT_USER!.id, connId);
@@ -56,7 +68,16 @@ const sendFile = async (req: IRequest, res: Response, next: NextFunction) => {
             sendAt: new Date(),
         };
 
-        await conn!.send(msg);
+        const msgId = await conn!.send(msg);
+
+        if (isDisappearing) {
+            DisappearMessage.create({
+                msgId,
+                type: connTypes.GROUP,
+                connId: conn!.connId,
+                expiry: new Date(Date.now() + config.MESSAGES.DISAPPEAR_TIME),
+            });
+        }
 
         res.status(200).json({
             status: 'SUCCESS',

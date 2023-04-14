@@ -15,6 +15,7 @@ import {
 } from './routes';
 
 import './db';
+import deleteDisappearMsg from './cron/disappear.message.cron';
 
 const app = express();
 
@@ -45,3 +46,6 @@ app.use(errorHandler);
 app.listen(config.PORT, () => {
     console.log('Server is running on port ', config.PORT);
 });
+
+// Corn Jobs
+deleteDisappearMsg.start();

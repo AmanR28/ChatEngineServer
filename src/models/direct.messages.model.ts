@@ -11,7 +11,7 @@ export interface IDirectMessages {
     userId1: string;
     userId2: string;
     messages: Map<string, IMessage>;
-    send(message: IMessage): Promise<null>;
+    send(message: IMessage): Promise<string>;
 }
 
 export interface IDirectMessagesModel extends Model<IDirectMessages> {
@@ -96,7 +96,7 @@ directMessageSchema.methods.send = async function (message: IMessage) {
         await UserConnections.updateOne({ userId: uid1 }, { $push: { [updates]: msgId } });
     }
 
-    return null;
+    return msgId;
 };
 
 export const DirectMessages = model<IDirectMessages, IDirectMessagesModel>(
