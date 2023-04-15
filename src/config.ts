@@ -7,7 +7,7 @@ const config = {
     PORT: process.env.PORT || 3000,
     JWT_TOKEN: {
         SECRET_KEY: process.env.TOKEN_SECRET_KEY,
-        EXPIRE_TIME: 24 * 60 * 60 * 1000, // 2H
+        EXPIRE_TIME: 300 * 24 * 60 * 60 * 1000, // 24H
     },
     DB: {
         MONGO_URI: process.env.MONGO_URI,

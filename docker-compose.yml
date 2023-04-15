@@ -5,12 +5,13 @@ version: '3.9'
 services:
     app:
         build: .
+        # image: amanr28/chatengine_server
         ports:
             - '3000:3000'
         depends_on:
             - mongo
         environment:
-            - MONGO_URI=mongodb://mongo:27017/cnlab
+            - MONGO_URI=mongodb+srv://root01:u4b2s3uEK3sVYxcn@test.7adb7iu.mongodb.net/cnlab?retryWrites=true&w=majority
             - UPLOAD_PATH=/uploads
         env_file:
             - .env
@@ -18,27 +19,6 @@ services:
             - uploads:/uploads
         networks:
             - default
-
-    mongo:
-        image: mongo:6
-        ports:
-            - '27017:27017'
-        volumes:
-            - mongo_data:/data/db
-        networks:
-            - default
-
-    mongo-express:
-        image: mongo-express
-        ports:
-            - '8081:8081'
-        environment:
-            ME_CONFIG_MONGODB_SERVER: mongo
-        networks:
-            - default
-        depends_on:
-            - mongo
-
     nginx:
         image: nginx:stable
         ports:
