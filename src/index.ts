@@ -12,6 +12,7 @@ import {
     directMessagesRoutes,
     groupMessagesRoutes,
     botMessagesRoutes,
+    filesRoutes,
 } from './routes';
 
 import './db';
@@ -34,6 +35,7 @@ app.use('/connection', connectionRoutes);
 app.use('/message/direct', directMessagesRoutes);
 app.use('/message/group', groupMessagesRoutes);
 app.use('/message/bot', botMessagesRoutes);
+app.use('/file', filesRoutes);
 
 app.use(errorHandler);
 

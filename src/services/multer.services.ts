@@ -56,6 +56,7 @@ export const fileStorage = multer.diskStorage({
                 return cb(new BadRequest('Invalid Type'), '');
         }
 
+        console.log('path', path);
         fs.mkdirSync(path, { recursive: true });
         cb(null, path);
     },
@@ -65,7 +66,23 @@ export const fileStorage = multer.diskStorage({
         const extension = file.mimetype.split('/')[1];
 
         const fileName = email + '_' + date + '.' + extension;
-        req.body.message = PATHS.PROFILE + fileName;
+
+        let path: string;
+        switch (req.body.type) {
+            case msgType.IMAGE:
+                path = PATHS.IMAGES;
+                break;
+            case msgType.AUDIO:
+                path = PATHS.AUDIO;
+                break;
+            case msgType.FILE:
+                path = PATHS.FILES;
+                break;
+            default:
+                return cb(new BadRequest('Invalid Type'), '');
+        }
+
+        req.body.message = path + fileName;
 
         cb(null, fileName);
     },
