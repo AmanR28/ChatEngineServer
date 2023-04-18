@@ -6,7 +6,7 @@ services:
     app:
         build: .
         ports:
-            - '80:80'
+            - '8090:8090'
         env_file:
             - .env
         volumes:

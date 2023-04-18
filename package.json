@@ -45,7 +45,7 @@
     },
     "scripts": {
         "dev": "cross-env NODE_ENV=development nodemon --ext ts --exec ts-node ./src/index",
-        "build": "tsc && service nginx reload",
-        "start": "yarn run build && service nginx start  && cross-env NODE_ENV=production node ./build"
+        "build": "tsc",
+        "start": "yarn run build && cross-env NODE_ENV=production node ./build"
     }
 }
