@@ -15,7 +15,7 @@ const config = {
     GOOGLE: {
         CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
         CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
-        CALLBACK: 'http://localhost:3000/auth/google/callback',
+        CALLBACK: process.env.GOOGLE_CALLBACK,
     },
     MULTER: {
         UPLOAD_PATH: process.env.UPLOAD_PATH,
