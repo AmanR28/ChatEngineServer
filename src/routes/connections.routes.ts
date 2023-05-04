@@ -6,8 +6,8 @@ const router = Router();
 
 router.get('/', isAuth, connectionController.connections);
 router.get('/updates', isAuth, connectionController.updates);
-router.get('/connect/direct', isAuth, connectionController.connectDirect);
-router.get('/connect/group', isAuth, connectionController.connectGroup);
-router.get('/connect/bot', isAuth, connectionController.connectBot);
+router.post('/connect/direct', isAuth, connectionController.connectDirect);
+router.post('/connect/group', isAuth, connectionController.connectGroup);
+router.post('/connect/bot', isAuth, connectionController.connectBot);
 
 export default router;

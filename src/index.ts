@@ -14,11 +14,14 @@ import {
     botMessagesRoutes,
     filesRoutes,
 } from './routes';
+import cors from 'cors';
 
 import './db';
 import deleteDisappearMsg from './cron/disappear.message.cron';
 
 const app = express();
+
+app.use(cors());
 
 app.use(bodyParser.json());
 

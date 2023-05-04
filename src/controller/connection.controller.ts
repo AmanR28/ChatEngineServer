@@ -77,7 +77,7 @@ const connectGroup = async (req: IRequest, res: Response, next: NextFunction) =>
                 state = 'ADDED TO GROUP';
             } else state = 'ALREADY IN GROUP';
         } else {
-            connId = req.JWT_USER!.id + 'G' + randomInt(1000);
+            connId = '_G' + req.JWT_USER!.id + randomInt(1000);
             await GroupMessages.create({
                 connId,
                 users: [req.JWT_USER?.id],
@@ -120,7 +120,7 @@ const connectBot = async (req: IRequest, res: Response, next: NextFunction) => {
         let connId = conn?.botConnections.get(botId);
 
         if (!connId) {
-            connId = userId + botId;
+            connId = userId + botId + randomInt(1000);
             await BotMessages.create({
                 connId,
                 userId,

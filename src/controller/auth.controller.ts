@@ -4,6 +4,7 @@ import { JwtToken, TokenType } from '../utils/token.utils';
 import { UserProfile } from '../models/profile.user.model';
 import { IRequest } from '../interface/request.interface';
 import { passportGoogle } from '../interface/google.passport.interface';
+import config from '../config';
 
 const validate = async (req: IRequest, res: Response) => {
     res.send(req.JWT_USER);
@@ -32,9 +33,20 @@ const googleAuth = async (req: Request, res: Response) => {
         await UserProfile.updateOne({ userId }, { $set: { lastSeen: new Date() } });
     }
 
-    return res.send({
-        token: JwtToken.create(TokenType.AUTH, userId),
-    });
+    // return res.send({
+    //     token: JwtToken.create(TokenType.AUTH, userId),
+    // });
+    let redirectPath =
+        config.WEB_URL +
+        'token?token=' +
+        JwtToken.create(TokenType.AUTH, userId) +
+        '&userId=' +
+        userId +
+        '&name=' +
+        user.name +
+        '&avatar=' +
+        user.avatar;
+    res.redirect(redirectPath);
 };
 
 export default {

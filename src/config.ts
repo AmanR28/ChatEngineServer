@@ -5,6 +5,7 @@ let NODE_ENV = process.env.NODE_ENV || 'development';
 const config = {
     NODE_ENV,
     PORT: process.env.PORT || 3000,
+    WEB_URL: process.env.WEB_URL,
     JWT_TOKEN: {
         SECRET_KEY: process.env.TOKEN_SECRET_KEY,
         EXPIRE_TIME: 300 * 24 * 60 * 60 * 1000, // 24H
