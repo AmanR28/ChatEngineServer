@@ -83,9 +83,10 @@ const connectGroup = async (req: IRequest, res: Response, next: NextFunction) =>
                 users: [req.JWT_USER?.id],
                 messages: {},
             });
+            let updates = 'groupConnections.' + connId;
             await UserConnections.updateOne(
                 { userId: req.JWT_USER?.id },
-                { $set: { groupConnections: { [connId]: connId } } }
+                { $set: { [updates]: connId } }
             );
             state = 'CREATED GROUP';
         }

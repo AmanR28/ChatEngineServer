@@ -6,10 +6,10 @@ const router = Router();
 
 // Client Side
 router.post('/send', isAuth, botsMessagesController.send);
-router.get('/get', isAuth, botsMessagesController.get);
-router.get('/getAll', isAuth, botsMessagesController.getAll);
-router.get('/read', isAuth, botsMessagesController.read);
-router.get('/readAll', isAuth, botsMessagesController.readAll);
+router.post('/get', isAuth, botsMessagesController.get);
+router.post('/getAll', isAuth, botsMessagesController.getAll);
+router.post('/read', isAuth, botsMessagesController.read);
+router.post('/readAll', isAuth, botsMessagesController.readAll);
 
 // Bot Side
 router.get('/bot-list', isAuth, botsMessagesController.botList);
