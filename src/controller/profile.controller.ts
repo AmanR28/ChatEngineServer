@@ -3,7 +3,7 @@ import { IRequest, NextFunction, Response } from '../interface/request.interface
 import { ApplicationError, BadRequest, ErrorTypes, UnAuthorizedError } from '../errors';
 
 const getProfile = async (req: IRequest, res: Response) => {
-    let userId = req.body.userId ? req.body.userId : req.JWT_USER!.id!;
+    let userId = req.query.userId ? req.query.userId : req.JWT_USER!.id!;
 
     const profile = await UserProfile.findOne({ userId });
     res.status(200).json({ data: profile });

@@ -9,5 +9,6 @@ router.get('/updates', isAuth, connectionController.updates);
 router.post('/connect/direct', isAuth, connectionController.connectDirect);
 router.post('/connect/group', isAuth, connectionController.connectGroup);
 router.post('/connect/bot', isAuth, connectionController.connectBot);
+router.post('/readComplete', isAuth, connectionController.readComplete);
 
 export default router;

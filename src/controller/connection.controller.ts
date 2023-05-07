@@ -149,10 +149,28 @@ const connectBot = async (req: IRequest, res: Response, next: NextFunction) => {
     }
 };
 
+const readComplete = async (req: IRequest, res: Response, next: NextFunction) => {
+    try {
+        await UserConnections.updateOne({ userId: req.JWT_USER!.id }, { $set: { updates: {} } });
+
+        res.status(200).json({
+            status: 'SUCCESS',
+            data: 'OK',
+        });
+    } catch (error) {
+        if (error instanceof ApplicationError) {
+            return next(error);
+        }
+        console.log('send', error);
+        return next(new Error('SYSTEM FAILURE'));
+    }
+};
+
 export default {
     connections,
     updates,
     connectDirect,
     connectGroup,
     connectBot,
+    readComplete,
 };

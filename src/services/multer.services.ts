@@ -8,8 +8,8 @@ import { BadRequest } from '../errors';
 const PATHS = {
     PROFILE: '/profiles/',
     IMAGES: '/images/',
-    AUDIO: '/audio',
-    FILES: '/files',
+    AUDIO: '/audio/',
+    FILES: '/files/',
 };
 
 export const profileStorage = multer.diskStorage({
@@ -40,6 +40,7 @@ export const fileStorage = multer.diskStorage({
 
         let path: string;
 
+        console.log(type);
         switch (type) {
             case msgType.IMAGE:
                 if (mime !== 'image') return cb(new BadRequest('MULTER_UNSUPPORTED_FILE'), '');

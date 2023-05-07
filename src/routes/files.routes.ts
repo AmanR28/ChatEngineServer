@@ -4,6 +4,6 @@ import filesController from '../controller/files.controller';
 
 const router = Router();
 
-router.get('/', isAuth, filesController.getFile);
+router.get('/', filesController.getFile);
 
 export default router;
